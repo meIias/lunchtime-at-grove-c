@@ -1,5 +1,9 @@
 *.db
 *.pyc
+.DS_Store
+
+package-lock.json
 
 venv/
 __pycache__/
+node_modules/
