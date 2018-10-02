@@ -81,14 +81,17 @@ def find_lunchmates(store, user):
         _init_user_store(store, u)
 
         available_users = store.get(USER_LIST_FIELD)
-        num_available_users = len(available_users)
+        num_available_users = len(available_users) - 1  # subtract one to discount current user
 
         if num_available_users < 3:
             # not enough users to get lunch
             return []
-        elif num_available_users == len(store[u]["lunch_matches"]):
+        elif abs(num_available_users - len(store[u]["lunch_matches"])) <= 3:
             # reset when full (different from coffee matching)
             store[u]["lunch_matches"] = []
+
+        if not already_matched:
+            already_matched = store[u]["lunch_matches"]
 
         matched_users = []
 
@@ -110,27 +113,20 @@ def find_lunchmates(store, user):
             if i in invalid_indices:
                 continue
 
-            matched_users.append(
-                available_users[i]
-            )
-
             invalid_indices.append(i)
 
-        # prepare recursive call by sanctioning off valid matched users vs repeated users
-        if len(already_matched) < num_available_users:
-            matched_users = [
-                mu for mu in matched_users if
-                mu not in store[u].get("lunch_matches") and
-                mu.lower() != u and
-                mu not in already_matched
-            ]
+            matched_user = available_users[i]
+            if (
+                matched_user.lower() == u or
+                matched_user in matched_users or
+                matched_user in already_matched or
+                matched_user in store[u].get('lunch_matches')
+            ):
+                continue
 
-            already_matched_users = already_matched + [
-                mu for mu in matched_users if
-                mu in store[u].get("lunch_matches") or
-                mu.lower() == u and
-                mu not in already_matched
-            ]
+            matched_users.append(
+                matched_user
+            )
 
         # recursively add more unmatched users if group size is less than desired
         if len(matched_users) < target_group_size:
@@ -138,7 +134,7 @@ def find_lunchmates(store, user):
                 store,
                 user,
                 remaining=target_group_size - len(matched_users),
-                already_matched=already_matched_users
+                already_matched=matched_users + already_matched
             )))
 
         return matched_users

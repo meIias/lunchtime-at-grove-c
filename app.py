@@ -85,5 +85,5 @@ if __name__ == "__main__":
     lunchtime_matching.check_init_data_store(app_data_store)
 
     with closing(app_data_store):
-        app.run()
+        app.run(threaded=True)
 
