@@ -15,7 +15,7 @@ app = Flask(
 )
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def main():
     """
     app entry point - renders welcome/login page
