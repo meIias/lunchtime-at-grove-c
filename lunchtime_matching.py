@@ -17,6 +17,17 @@ from random import randint
 USER_LIST_FIELD = "USER_LIST"
 
 
+def check_init_data_store(store):
+    """
+    initialize some fake data for initial startup
+    """
+    if USER_LIST_FIELD not in store:
+        store[USER_LIST_FIELD] = [
+            "john", "dave", "test", "gary", "ron", "mark", "jenny", "jessica", "christina",
+            "tessa", "billy", "sophie", "dotty", "walrus", "sonny bono", "fred"
+        ]
+
+
 def find_coffeemate(store, user):
     """
     implements the coffee user matching algorithm
@@ -62,7 +73,7 @@ def find_lunchmates(store, user):
     - prioritize unmatched users
     """
 
-    def find_lunchmates_recursive(store, user, remaining=0, already_matched=[]):
+    def find_lunchmates_recursive(store, user, remaining=-1, already_matched=[]):
         """
         recursive function to match users for lunch while maintaining new user priority
         """
@@ -83,19 +94,21 @@ def find_lunchmates(store, user):
 
         # random group size between 3, 5
         # recursively add remaining number of users required
-        if remaining == 0:
+        if remaining == -1:
             target_group_size = _get_rand_from_range(3, 5)
         else:
             target_group_size = remaining
 
         # get n users based on target group size
         invalid_indices = []
-        for _ in range(target_group_size):
+        while len(matched_users) < target_group_size:
+            if len(invalid_indices) == num_available_users:
+                break
+
             i = _get_rand_from_range(0, num_available_users - 1)
 
-            # make sure not to get the same user multiple times
-            while i in invalid_indices:
-                i = _get_rand_from_range(0, num_available_users - 1)
+            if i in invalid_indices:
+                continue
 
             matched_users.append(
                 available_users[i]
@@ -145,6 +158,7 @@ def _init_user_store(store, user):
             "lunch_matches": [],
             "coffee_matches": []
         }
+        store[USER_LIST_FIELD].append(user)
 
 
 def _get_rand_from_range(start, end):
