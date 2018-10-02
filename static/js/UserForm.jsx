@@ -61,6 +61,7 @@ const UserForm = props => (
         <StyledDiv>
             <StyledButton
                 onClick={props.onUserSet}
+                disabled={!props.checkUsernameValid()}
             >
                 GO
             </StyledButton>
@@ -70,7 +71,8 @@ const UserForm = props => (
 
 UserForm.propTypes = {
     onUserSet: PropTypes.func.isRequired,
-    onUsernameChanged: PropTypes.func.isRequired
+    onUsernameChanged: PropTypes.func.isRequired,
+    checkUsernameValid: PropTypes.func.isRequired
 };
 
 export default UserForm;
